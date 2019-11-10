@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "node-osc": "^4.1.1"
+  }
+}
