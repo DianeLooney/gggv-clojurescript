@@ -82,8 +82,13 @@
 
 (def j (julia))
 (def v1 (create-video "sample1.mp4"))
+(def h (highlights ""))
 (def s1 (pride ""))
 (def k (kaleidoscope ""))
+(def e (edges ""))
 (set-uniform k "radius" 540)
-(<< w k s1 v1)
+(set-uniform h "threshold" 0.5)
+(set-uniform h "fadeRate" 0.025)
+
+(<< w k s1 h e v1)
 
