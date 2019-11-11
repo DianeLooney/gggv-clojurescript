@@ -57,10 +57,11 @@
 (def kaleidoscope (mk-shader "filt.kaleidoscope"))
 (def highlights (mk-shader "filt.highlights"))
 (def dots (mk-shader "filt.dots"))
+(def haze (mk-shader "filt.haze"))
 
 (defn shatter [name1 name2 name3]
   (shader (str name ".shatter")
-          :p (program
+          :p (watch-program
                "shatter"
                "shaders/vert/fx.shatter.glsl" 
                "shaders/geom/fx.shatter.glsl"
@@ -82,13 +83,15 @@
 
 (def j (julia))
 (def v1 (create-video "sample1.mp4"))
+(def v2 (create-video "muxed.mp4"))
 (def h (highlights ""))
-(def s1 (pride ""))
+(def s1 (haze ""))
 (def k (kaleidoscope ""))
 (def e (edges ""))
+(def m (mask s1 "" v2))
+(<< w s1 v1)
 (set-uniform k "radius" 540)
 (set-uniform h "threshold" 0.5)
 (set-uniform h "fadeRate" 0.025)
 
-(<< w k s1 h e v1)
-
+;; (<< w k s1 h e v1)
