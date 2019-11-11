@@ -21,8 +21,8 @@ const sendNow = () => {
 			        sendNowInterval = null;
 			        return;
 			    }
-
-	    client.send(...queue.shift());
+		const val = queue.shift();
+	    client.send(...val.map(x => (typeof x === 'object') ? x.name : x)); //queue.shift());
 }
 
 const server = new Server(4201, '0.0.0.0');
