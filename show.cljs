@@ -1,5 +1,5 @@
 (ns showtime
-  (:use [runtime :only (done shader out)]))
+  (:use [runtime :only (done shader t out)]))
 
 (def blend (shader "blend.normal" {}))
 (def bits (shader "3bit" {}))
@@ -25,8 +25,10 @@
 (def threshold (shader "threshold" {:threshold 0.05}))
 (def grayscale (shader "grayscale" {}))
 (def edges (shader "detectEdges" {:threshold 0.2}))
+(def sobel (shader "filt.sobel" {}))
 (def ideal (shader "ideal" {}))
-(def sobel (shader "sobel" {}))
+(def kaleid (shader "kaleidoscope" {}))
+(def julia (shader "gen.julia" {}))
 (def unsharp (shader "unsharp" {}))
 (def default (shader "default" {}))
 (def invert (shader "invert" {}))
@@ -43,8 +45,14 @@
 
 (def vid (-> (video "sample1.mp4") shiftHue))
 
+(def julia (shader "gen.julia" {}))
+
 (->
-  [(video "sample1.mp4") (-> (default) invert)]
-  blendNormal
+  (video "sample1.mp4")
+  sobel
+  kaleid
+  ;(posterize {:bins #(+ 4 (* 3 (.sin js/Math t)))})
+  ;invert
+  (shiftHue {:amount #(mod (/ t 10) 1)})
   out
 )
