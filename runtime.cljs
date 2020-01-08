@@ -29,9 +29,8 @@
    (map-indexed #(osc "/source.shader/set/input" (:name data) %1 (:name %2)) (:inputs data))
    (map #(uniform->osc (:name data) %1 (get (:uniforms data) %1)) (keys (:uniforms data)))])
 (defn ffvideo->osc [data] [(osc "/source.ffvideo/create" (:name data) (:path data))])
-(defn fft->osc [data] [
-  (osc "/source.fft/create" (:name data))
-  (osc "/source.fft/scale" (:name data) (:scale data))])
+(defn fft->osc [data] [(osc "/source.fft/create" (:name data))
+                       (osc "/source.fft/scale" (:name data) (:scale data))])
 (defn hash->osc [data]
   (flatten
    (case (:source data)
@@ -42,14 +41,16 @@
 
 (defn uniform->osc [shader name value]
   (if (fn? value)
-      (uniformFn->osc shader name value)
-      (uniformVal->osc shader name value)))
+    (uniformFn->osc shader name value)
+    (uniformVal->osc shader name value)))
 (defn uniformVal->osc [shader name value]
-  (osc "/source.shader/set/uniform1f" shader name value)) 
+  (osc "/source.shader/set/uniform1f" shader name value))
 (defn uniformFn->osc [shader name value]
   (def exp #(uniformVal->osc shader name (value)))
   (js/setInterval #(send [(exp)]) 17)
   (exp))
+
+(def nameUniq 0)
 (defn shader [n uniforms]
   (fn [s & [args]]
     (def inputs (if (nil? s) [] (flatten [s])))
@@ -59,12 +60,13 @@
         0 n
         1 (str (first inputNames) "->" n)
         (str "(" (clojure.string/join "," inputNames) ")->" n)))
+    (def nameUniq (+ 1 nameUniq))
     {:source :shader
      :program n
      :vert "shaders/vert/default.glsl"
      :geom "shaders/geom/default.glsl"
      :frag (str "shaders/frag/" n ".glsl")
-     :name thisName
+     :name (str thisName "[" nameUniq "]")
      :inputs inputs
      :uniforms (merge uniforms args)}))
 
