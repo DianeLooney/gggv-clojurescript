@@ -26,9 +26,12 @@
    (osc "/program/watch" (:program data) (:vert data) (:geom data) (:frag data))
    (osc "/source.shader/create" (:name data))
    (osc "/source.shader/set/program" (:name data) (:program data))
+   (osc "/source/set/magfilter" (:name data) (:mag data))
    (map-indexed #(osc "/source.shader/set/input" (:name data) %1 (:name %2)) (:inputs data))
    (map #(uniform->osc (:name data) %1 (get (:uniforms data) %1)) (keys (:uniforms data)))])
-(defn ffvideo->osc [data] [(osc "/source.ffvideo/create" (:name data) (:path data))])
+(defn ffvideo->osc [data & timescale]
+  [(osc "/source.ffvideo/create" (:name data) (:path data))
+   (osc "/source.ffvideo/set/timescale" (if (nil? timescale) 1 timescale))])
 (defn fft->osc [data] [(osc "/source.fft/create" (:name data))
                        (osc "/source.fft/scale" (:name data) (:scale data))])
 (defn hash->osc [data]
@@ -66,11 +69,16 @@
      :vert "shaders/vert/default.glsl"
      :geom "shaders/geom/default.glsl"
      :frag (str "shaders/frag/" n ".glsl")
+     :mag "NEAREST"
      :name (str thisName "[" nameUniq "]")
      :inputs inputs
      :uniforms (merge uniforms args)}))
+
+(defn mag-linear [input]
+  (merge input {:mag "LINEAR"}))
 
 (defn out [data]
   (def messages (hash->osc data))
   (def suffix (osc "/source.shader/set/input" "window" 0 (:name data)))
   (send (flatten [messages suffix])))
+ff
