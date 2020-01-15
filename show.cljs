@@ -1,8 +1,9 @@
 (ns showtime
-  (:use [runtime :only (done shader t mag-linear out)]))
+  (:use [runtime :only (done shader shaderGen t mag-linear out)]))
 
 (def modulate (shader "modulate" {}))
 (def blend-normal (shader "blend.normal" {}))
+(def blend-add (shader "blend.add" {}))
 (def bits (shader "3bit" {}))
 (def bit8 (shader "8bit"
                   {:color0 [0 0 0]
@@ -35,6 +36,7 @@
 (def sobel (shader "filt.sobel" {}))
 (def kaleid (shader "kaleidoscope" {}))
 (def julia (shader "gen.julia" {}))
+(def genBlocks (shaderGen "gen.blocks" {}))
 (def lightGraffiti (shader "lightGraffiti"
                            {:highlightColor [0 1 1]
                             :decay 0.003
@@ -44,12 +46,14 @@
 (def default (shader "default" {}))
 (def invert (shader "invert" {}))
 (def multiply (shader "multiply" {}))
-(def blendNormal (shader "blend.normal" {}))
+(def blend-multiply (shader "blend.multiply" {}))
 (def shiftHue (shader "shift.hue" {:amount 0.5}))
 (def posterize (shader "posterize" {:bins 5, :gamma 1.0}))
 (def distort (shader "distort.vhs" {:bandSize 250}))
 (def shimmer (shader "shimmer" {:bandSize 250}))
 (def slats (shader "slats" {:slats 20, :minSize 0.05}))
+(def rgb->cmyk (shader "convert.rgb2cmy"))
+(def cmyk->rgb (shader "convert.cmyk2rgb"))
 
 (defn video [path] {:source :ffvideo, :path path, :name path})
 (defn fft [[args]]
@@ -57,9 +61,15 @@
   {:source :fft, :name "fft", :scale (:scale props)})
 
 (->
- (video "sample1.mp4")
- (slats {})
- (expand {:decay [0 0 0]})
- sobel
+ [ (genBlocks {:color [1 0 0] :rseed 1}) 
+   (genBlocks {:color [0 1 0] :rseed 2}) 
+   (genBlocks {:color [0 0 1] :rseed 3}) ]
+  (blend-add)
+  sobel
+  (cmyk->rgb)
+  distort
+  kaleid
  out)
+
+
 

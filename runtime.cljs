@@ -54,6 +54,19 @@
   (exp))
 
 (def nameUniq 0)
+(defn shaderGen [n uniforms]
+  (fn  [& [args]]
+    (def thisName  n)
+    (def nameUniq (+ 1 nameUniq))
+    {:source :shader
+     :program n
+     :vert "shaders/vert/default.glsl"
+     :geom "shaders/geom/default.glsl"
+     :frag (str "shaders/frag/" n ".glsl")
+     :mag "NEAREST"
+     :name (str thisName "[" nameUniq "]")
+     :inputs []
+     :uniforms (merge uniforms args)}))
 (defn shader [n uniforms]
   (fn [s & [args]]
     (def inputs (if (nil? s) [] (flatten [s])))
