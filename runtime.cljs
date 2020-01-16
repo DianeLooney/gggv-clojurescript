@@ -31,7 +31,7 @@
    (map #(uniform->osc (:name data) %1 (get (:uniforms data) %1)) (keys (:uniforms data)))])
 (defn ffvideo->osc [data & timescale]
   [(osc "/source.ffvideo/create" (:name data) (:path data))
-   (osc "/source.ffvideo/set/timescale" (if (nil? timescale) 1 timescale))])
+   (osc "/source.ffvideo/set/timescale" (:name data) (if (nil? timescale) 1 timescale))])
 (defn fft->osc [data] [(osc "/source.fft/create" (:name data))
                        (osc "/source.fft/scale" (:name data) (:scale data))])
 (defn hash->osc [data]
@@ -94,4 +94,6 @@
   (def messages (hash->osc data))
   (def suffix (osc "/source.shader/set/input" "window" 0 (:name data)))
   (send (flatten [messages suffix])))
-ff
+
+
+
