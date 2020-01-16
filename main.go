@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os/exec"
 	"time"
 
@@ -31,11 +30,8 @@ func spawn(kill chan bool) (done chan bool) {
 		killed := false
 		for {
 			ln, _, err := rd.ReadLine()
-			if err == io.EOF {
-				break
-			}
 			if err != nil {
-				continue
+				break
 			}
 			if kill != nil && !killed {
 				kill <- true
@@ -49,11 +45,8 @@ func spawn(kill chan bool) (done chan bool) {
 		rd := bufio.NewReader(stdErr)
 		for {
 			ln, _, err := rd.ReadLine()
-			if err == io.EOF {
-				break
-			}
 			if err != nil {
-				continue
+				return
 			}
 			println(string(ln))
 		}
