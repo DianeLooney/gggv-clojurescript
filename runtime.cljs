@@ -102,6 +102,3 @@
   (let [messages (hash->osc data)
         suffix   (osc "/source.shader/set/input" "window" 0 (:name data))]
     (send (flatten [messages suffix]))))
-
-
-
