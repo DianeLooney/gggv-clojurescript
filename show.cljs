@@ -52,8 +52,8 @@
 (def distort (shader "distort.vhs" {:bandSize 250}))
 (def shimmer (shader "shimmer" {:bandSize 250}))
 (def slats (shader "slats" {:slats 20, :minSize 0.05}))
-(def rgb->cmyk (shader "convert.rgb2cmy"))
-(def cmyk->rgb (shader "convert.cmyk2rgb"))
+(def rgb->cmyk (shader "convert.rgb2cmy" {}))
+(def cmyk->rgb (shader "convert.cmyk2rgb" {}))
 
 (defn video [path] {:source :ffvideo, :path path, :name path})
 (defn fft [[args]]
@@ -61,15 +61,12 @@
   {:source :fft, :name "fft", :scale (:scale props)})
 
 (->
- [ (genBlocks {:color [1 0 0] :rseed 1}) 
-   (genBlocks {:color [0 1 0] :rseed 2}) 
-   (genBlocks {:color [0 0 1] :rseed 3}) ]
-  (blend-add)
-  sobel
-  (cmyk->rgb)
-  distort
-  kaleid
+ [(genBlocks {:color [1 0 0] :rseed 1})
+  (genBlocks {:color [0 1 0] :rseed 2})
+  (genBlocks {:color [0 0 1] :rseed 3})]
+ (blend-add)
+ sobel
+ (cmyk->rgb)
+ distort
+ kaleid
  out)
-
-
-
